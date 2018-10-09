@@ -89,10 +89,7 @@ namespace Party_Tower_Main
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        //Testing stuff
-        Tile testPlatform = new Tile(false, true, false, false, null);
-        Tile secondTestPlatform = new Tile(false, true, false, false, null);
-        Tile testWall = new Tile(false, false, false, true, null);
+
         SpriteFont textFont;
 
         //Shared keyboard
@@ -112,8 +109,7 @@ namespace Party_Tower_Main
         CakeManager cakeManager;
         Cake cake;
 
-        //Cake Table
-        Table testTable;
+
 
         //Ladder fields
         Ladder topladder;
@@ -170,10 +166,10 @@ namespace Party_Tower_Main
         List<Tile> tilesOnScreen = new List<Tile>();
         Texture2D mainTileSheet;
         Texture2D tableTexture;
-        Room testRoom;
-        Room testRoom2;
 
         //Maps
+        //level zero is used to allow load screen to correctly load level 1
+        Map levelZero;
         Map levelOne;
         Map levelTwo;
         Map levelThree;
@@ -292,10 +288,7 @@ namespace Party_Tower_Main
         {
             graphics = new GraphicsDeviceManager(this);
 
-            //temporary
-            testPlatform.Hitbox = new Rectangle(0, 400, 1000, 100);
-            secondTestPlatform.Hitbox = new Rectangle(400, 600, 1000, 100);
-            testWall.Hitbox = new Rectangle(300, 500, 100, 500);
+
             graphics.PreferredBackBufferWidth = 1920;
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
@@ -326,9 +319,7 @@ namespace Party_Tower_Main
 
             bothPlayersDead = false;
 
-            tilesOnScreen.Add(testPlatform);
-            tilesOnScreen.Add(secondTestPlatform);
-            tilesOnScreen.Add(testWall);
+
             previousGp1 = new GamePadState();
             gp1 = new GamePadState();
 
@@ -349,6 +340,8 @@ namespace Party_Tower_Main
             players = new List<Player>();
             playerOne = new Player(1, 0, playerOneTexture, new Rectangle(300, 300, 60, 100), Color.White, Content);
             playerTwo = new Player(2, 1, playerTwoTexture, new Rectangle(400, 300, 60, 100), Color.Red, Content);
+
+            cakeManager = new CakeManager(players, Content);
 
             masterVolumeSlider = new Slider(Content.Load<Texture2D>("menuImages\\sliderBar"), Content.Load<Texture2D>("menuImages\\sliderButton"), 
                 100, Content.Load<Texture2D>("menuImages\\masterVolumeIcon"));
@@ -422,9 +415,6 @@ namespace Party_Tower_Main
             camera.SetMapEdge(new Vector2(5000, 5000)); //<- Correct
 
             previousCameraCenter = new Vector2(camera.CameraCenter.X, camera.CameraCenter.Y);
-
-            //adjust first two values to set spawn point for cake
-            cake = new Cake(200, 400, playerOneTexture);
 
             players.Add(playerOne);
             players.Add(playerTwo);
@@ -644,13 +634,6 @@ namespace Party_Tower_Main
             SoundEffect.MasterVolume = (masterVolumeSlider.ReturnedValue / 100) * (soundEffectSlider.ReturnedValue / 100);
             MediaPlayer.IsRepeating = true;
 
-            //Ladder testing
-            bottomLadder = new Ladder(false, true, 1200, 500);
-            normalLadder1 = new Ladder(false, false, 1200, 500 - 1920 / 16);
-            normalLadder2 = new Ladder(false, false, 1200, 500 - ((1920 / 16) * 2));
-            normalLadder3 = new Ladder(false, false, 1200, 500 - ((1920 / 16) * 3));
-            topladder = new Ladder(true, false, 1200, 500 - ((1920 / 16) * 4));
-
 
             ladders = new List<Ladder>();
 
@@ -673,14 +656,11 @@ namespace Party_Tower_Main
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            testTable = new Table(new Rectangle(200, 900, 200, 200), playerOneTexture);
-
             topLadderTexture = playerOneTexture;
             bottomLadderTexture = playerTwoTexture;
             normalLadderTexture = playerOneTexture;
             backgroundTexture = Content.Load<Texture2D>("tempBackArt");
             fading_screen_texture = Content.Load<Texture2D>("black_pixel");
-            cakeManager = new CakeManager(players, cake, Content, testTable);
 
             #region Etc Textures
             //########### Add Textures Here #############
@@ -744,23 +724,7 @@ namespace Party_Tower_Main
             // EXAMPLE                          of the room that is <above above above left left> of the root room
             #endregion
 
-            /*      
-            tempHolder = LvlCoordinator.UpdateMapFromPath("levelOne");
-            testRoom = new Room(tempHolder, LvlCoordinator.LadderHolder, LvlCoordinator.TableHolder, LvlCoordinator.CakeHolder, LvlCoordinator.ExitHolder, LvlCoordinator.PathManagerMap, LvlCoordinator.EnemyHolder);
-            //Comment this out eventaully
-            levelMap[0] = LvlCoordinator.PathManagerMap;
 
-            LevelMapCurrent.AddRoom(testRoom);
-            importantObjects.AddRange(testRoom.ImportantObjects());
-            //first room is automatically placed as the root
-
-            tempHolder = LvlCoordinator.UpdateMapFromPath("levelTwo");
-            testRoom2 = new Room(tempHolder, LvlCoordinator.LadderHolder, LvlCoordinator.TableHolder, LvlCoordinator.CakeHolder, LvlCoordinator.ExitHolder, LvlCoordinator.PathManagerMap, LvlCoordinator.EnemyHolder);
-            LevelMapCurrent.AddRoom(testRoom2);
-            LevelMapCurrent.PlaceRight(LevelMapCurrent.Root);
-
-            LevelMapOld = null;
-            */
             #endregion
 
             #region New Version of Level Placement
@@ -770,6 +734,11 @@ namespace Party_Tower_Main
             #endregion
 
             #endregion Testing Levels
+
+            #region levelZero
+            levelZero = new Map(tempMeasuringStick, 0, LvlCoordinator, 1, 1);
+            LevelMapCurrent = levelZero;
+            #endregion
 
             #region Level 1
             levelOne = new Map(tempMeasuringStick, 1, LvlCoordinator, 4, 5);
@@ -833,13 +802,6 @@ namespace Party_Tower_Main
             levelList.Add(levelNine);
 
             #endregion Add Levels to the Level List
-
-            // Test Enemy Manually Made
-            currentEnemyList.Add(new Enemy(EnemyType.Stationary, new Rectangle(1200, 500, 64, 64), defaultEnemySprite, 500));
-
-            testPlatform.TileSheet = mainTileSheet;
-            secondTestPlatform.TileSheet = mainTileSheet;
-            testWall.TileSheet = mainTileSheet;
 
             //had to move this to load content because the textures are null if you try to instantiate a player in Initialize
 
@@ -1025,14 +987,21 @@ namespace Party_Tower_Main
 
                             if (t != null)
                             {
-                                //don't let the player put the cake down if it is touching a tile, but allow placing if the table is it is touching that
-                                if (cakeManager.PuttingDownChecker.Intersects(t.Hitbox) && !cakeManager.PuttingDownChecker.Intersects(testTable.Hitbox))
+                                foreach (GameObject currentObject in importantObjects)
                                 {
-                                    cakeManager.CakeBlockedByTile = true;
-                                }
-                                else if (cakeManager.PuttingDownChecker.Intersects(testTable.Hitbox))
-                                {
-                                    cakeManager.CakeBlockedByTile = false;
+                                    if (currentObject is Table)
+                                    {
+                                        //don't let the player put the cake down if it is touching a tile, but allow placing if the table it is touching is that
+                                        if (cakeManager.PuttingDownChecker.Intersects(t.Hitbox) && !cakeManager.PuttingDownChecker.Intersects(currentObject.Hitbox))
+                                        {
+                                            cakeManager.CakeBlockedByTile = true;
+                                        }
+                                        else if (cakeManager.PuttingDownChecker.Intersects(currentObject.Hitbox))
+                                        {
+                                            cakeManager.CakeBlockedByTile = false;
+                                        }
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -1209,11 +1178,6 @@ namespace Party_Tower_Main
                                     }
                                 }
                             }
-
-                            //Add temporary test tiles here
-                            //tilesOnScreen.Add(testPlatform);
-                            //tilesOnScreen.Add(secondTestPlatform);
-                            //tilesOnScreen.Add(testWall);
 
                             LevelMapOld = LevelMapCurrent;
                         }
@@ -1667,6 +1631,21 @@ namespace Party_Tower_Main
                             //reset player & camera position manually to center of root node
                             //start playing different random track
 
+                            //Find the cake and table of the current level
+                            foreach (GameObject currentObject in importantObjects)
+                            {
+                                //update the cakeManager whenever a level is loaded
+                                if (currentObject is Cake)
+                                {
+                                    cake = (Cake)currentObject;
+                                    cakeManager.Cake = cake;
+                                }
+                                else if (currentObject is Table)
+                                {
+                                    cakeManager.Table = (Table)currentObject;
+                                }
+                            }
+
                         }
 
                         //fade back from black screen
@@ -1674,9 +1653,11 @@ namespace Party_Tower_Main
                         {
                             fader_last_frame = fader.finished;
                             fading_screen_alpha_percent = fader.change_alpha_percent_negative(fading_screen_alpha_percent);
+
+                            gameState = GameState.Game;
                         }
                     }
-                    gameState = GameState.Game;
+
                     break;
 
             }
@@ -1838,8 +1819,6 @@ namespace Party_Tower_Main
                     //draw background
                     spriteBatch.Draw(backgroundTexture, backgroundRect, Color.White);
 
-                    testTable.Draw(spriteBatch);
-
                     foreach (Ladder ladder in ladders)
                     {
                         if (ladder.IsDrawn)
@@ -1964,6 +1943,10 @@ namespace Party_Tower_Main
                     break;
 
                 case GameState.LoadScreen:
+                    if (fader is null)
+                    {
+                        fader = new Fader(60);
+                    }
                     fader.Draw(spriteBatch, fading_screen_texture, fading_screen_rect, fading_screen_alpha_percent);
                     break;
 
@@ -2264,7 +2247,7 @@ namespace Party_Tower_Main
                     {
                         menuChoices[currentRow, currentColumn].IsHighlighted = false;
                         secondaryGameState = gameState;
-                        gameState = GameState.Game;
+                        gameState = GameState.LoadScreen;
                     }
                     else if (menuChoices[currentRow, currentColumn].Equals(levelSelectButton))
                     {

@@ -23,12 +23,9 @@ namespace Party_Tower_Main
         SoundEffect cakeSound;
 
         //Constructor
-        public CakeManager(List<Player> players, Cake cake,  ContentManager content, Table table)
+        public CakeManager(List<Player> players, ContentManager content)
         {
-            this.cake = cake;
             this.players = players;
-            this.table = table;
-            puttingDownChecker = cake.Hitbox;
             cakeBlockedByTile = false;
 
             errorSound = content.Load<SoundEffect>("sound/cakeError");
@@ -50,7 +47,9 @@ namespace Party_Tower_Main
         public Cake Cake
         {
             get { return cake; }
-            set { cake = value; }
+            set { cake = value;
+                puttingDownChecker = cake.Hitbox;
+            }
         }
         public Table Table
         {
