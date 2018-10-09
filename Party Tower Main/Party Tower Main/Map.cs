@@ -11,15 +11,6 @@ namespace Party_Tower_Main
     /// </summary>
     class Map
     {
-        #region Marco Data 
-        // Holds Camera Limiters to be set within Dynamic Camera.SetMapEdge() when Map's Switch
-
-        public int Above { get; set; }
-        public int Below { get; set; }
-        public int Right { get; set; }
-        public int Left { get; set; }
-
-        #endregion Marco Data
 
         private Room root;
         public Room Root
