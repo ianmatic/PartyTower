@@ -1824,7 +1824,7 @@ namespace Party_Tower_Main
                                     (int)(drawUnit * currentButton.VisibleText.Length), currentButton.Area.Height);
                             }
 
-                            spriteBatch.DrawString(textFont, currentButton.VisibleText, new Vector2(currentButton.StartX, currentButton.StartY), Color.Purple);
+                            spriteBatch.DrawString(textFont, currentButton.VisibleText, new Vector2(currentButton.StartX, currentButton.StartY), Color.Black);
                         }
                     }
                     spriteBatch.End();
@@ -1978,7 +1978,7 @@ namespace Party_Tower_Main
 
                     spriteBatch.DrawString(textFont, "Music by 'Music Man'", new Vector2(Nudge(true, 32), height * 2 / 3 - Nudge(false, 5)), Color.White);
 
-                    spriteBatch.DrawString(textFont,"Press Any key to go back!", new Vector2(Nudge(true, 29), height * 8 / 9 - Nudge(false, 7)), Color.White);
+                    spriteBatch.DrawString(textFont,"Press Escape to go back!", new Vector2(Nudge(true, 29), height * 8 / 9 - Nudge(false, 7)), Color.White);
                     spriteBatch.End();
                     break;
             }
