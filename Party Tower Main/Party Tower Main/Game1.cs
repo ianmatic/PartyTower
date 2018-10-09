@@ -1089,7 +1089,7 @@ namespace Party_Tower_Main
                         }
 
                         // Update A* Map of current players
-                        pathManager.UpdatePlayersOnMap(/*String of Constructed A* Map goes here*/ levelMap[0], playerOne.Hitbox, playerTwo.Hitbox);
+                        //pathManager.UpdatePlayersOnMap(/*String of Constructed A* Map goes here*/ levelMap[0], playerOne.Hitbox, playerTwo.Hitbox);
 
                         previousCameraCenter = camera.CameraCenter;
 
